@@ -11,7 +11,8 @@ namespace ene2
     {
         NamespaceManager scope;
         StringBuilder stbCode, stbBSS, stbData;
-        TypeNode lastType = null;
+        IType lastTypeI = null;
+        TypeNode lastType { get { return lastTypeI as TypeNode; } set { lastTypeI = value; } }
 
         String inbuild = @"
 boolNot:        ;0 -> 0xffffffff.   1, 830, 555 -> 0. implicit normalization.
@@ -167,13 +168,30 @@ ret
 
         private void generateStruct(StructNode ast)
         {
-            scope.enterOrCreateNamespace(ast.name.namespace_);
+            Int32 offset = 0;
+            foreach (IType statement in ast.member) //calculate size of struct
+            {
+                statement.baseOffset = offset;
+                statement.type = (TypeNode)scope.getObj(statement.type.name);
+                offset += statement.type.allocSize;
+            }
+            ast.allocSize = offset;
+
+            //just ignore this ugly shit
+            ast.name.namespace_.v = ast.name.namespace_.local;
 
             if (scope.isRegistered(ast.name))
                 new Error(Errors.LabelInUse, ast.name);
+            scope.register(ast);
+
+            ast.name.namespace_.v.Add(ast.name.v);
+            //
+            scope.enterOrCreateNamespace(ast.name.namespace_);
 
             foreach (AST statement in ast.member)
                 generateStructStatement((AST)statement);
+
+            scope.leaveNamespace(ast.name.namespace_.v.Count);
         }
 
         public void generateStructStatement(AST ast)
@@ -195,6 +213,7 @@ ret
         public void generateMemberFunction(FunctionNode ast)
         {
             ast.name.namespace_ = scope.getNamespaceRelative();
+            scope.register(ast);
             generateFunction(ast);
         }
 
@@ -301,7 +320,10 @@ ret
                 setPropagateTypeDown(type, newType);
             }
             else
-                pointedToType = (TypeNode)scope.getObj(type.name);
+            {
+                var tmp = scope.getObj(type.name);
+                pointedToType = (TypeNode)tmp;
+            }
 
             return pointedToType;
         }
@@ -340,6 +362,8 @@ ret
                 generateASM((ASMNode)ast);
             else if (ast is TypeNode)
                 generateType((TypeNode)ast);
+            else if (ast is MemberAccessNode)
+                generateMemberAccess((MemberAccessNode)ast);
             else
                 new Error(Errors.Internal, ast);
         }
@@ -347,7 +371,7 @@ ret
         private void generateFunction(FunctionNode ast)
         {
             Int32 localSize = 0, argSize = 0;
-            List<VariableNode> localVars = new List<VariableNode>();
+            //List<VariableNode> localVars = new List<VariableNode>();
 
             foreach (AST line in ast.block.code)
                 if (line is VariableNode)
@@ -355,7 +379,6 @@ ret
 
             foreach (AST line in ast.args.items)
                 argSize += ((TypeNode)scope.getObj(((ArgNode)line).type.name)).allocSize;
-
 
             Int32 ebpOffset = 4;
             foreach (AST line in ast.args.items)
@@ -367,8 +390,7 @@ ret
 
                 scope.register(new VariableNode(arg.name, arg.type, true, tmpOff == 0 ? -1 : ebpOffset));
             }
-
-
+            
             emitLn(ast.name.ToString() + ':');
             emitLn("push ebp     ;stack frame begin");
             emitLn("mov ebp, esp");
@@ -376,9 +398,54 @@ ret
 
             generateBlock(ast.block);
 
+            emitLn(".end:        ;jump mark for 'return' keyword");
             emitLn("mov esp, ebp ;stack frame end");
             emitLn("pop ebp");
             emitLn("ret " + (argSize).ToString());
+        }
+
+        //returns the address of the member on the stack, and the type in this.lastType
+        private void generateMemberAccess(MemberAccessNode ast)
+        {
+            if (ast.member is IdentNode)
+                generateMemberAccessStruct((IdentNode)ast.member);
+            else if (ast.member is FunctionCallNode)
+                generateMemberCallStruct((FunctionCallNode)ast.member);
+            else if (ast.member is ExpressionTermNode)
+            {
+                ast.member = ((ExpressionTermNode)ast.member).expressions[0];
+                generateMemberAccess(ast);
+            }
+            else if (ast.member is MemberAccessNode)
+            {
+                generateMemberAccess((MemberAccessNode)ast.member);
+                generateAdd();
+            }
+            else
+            {
+                //someone wrote like: point.3
+                new Error(Errors.MemberUnknown, ast.member, lastType.name);
+            }
+        }
+
+        private void generateMemberAccessStruct(IdentNode ast)  //pass the member name
+        {
+            for (int i = 0; i < lastType.member.Length; i++)
+                if (lastType.member[i].name.v == ast.v)
+                {
+                    generatePush(lastType.member[i].baseOffset.ToString());
+                    lastTypeI = lastType.member[i];
+                    return;
+                }
+
+            new Error(Errors.MemberUnknown, ast, lastType.name);
+        }
+
+        private void generateMemberCallStruct(FunctionCallNode ast)  //pass the member name
+        {
+            //generateMemberAccessStruct(ast.target);
+            ast.target.namespace_ = lastTypeI.name.namespace_;
+            generateFunctionCall(ast);
         }
 
         private void generateFunctionCall(FunctionCallNode ast)
@@ -399,6 +466,8 @@ ret
             emitLn("call " + target.name);
             if (returnType.size != 0)
                 emitLn("push eax");                     //save the return value
+
+            lastType = returnType;
         }
 
         private void generateAssign(AssignNode ast)
@@ -490,7 +559,10 @@ ret
 
         private void generateReturn(ReturnNode ast)
         {
-            emitLn("ret");
+            generateExpressionTerm((ExpressionTermNode)ast.returnValue);
+            generatePop("eax");
+
+            emitLn("jmp .end");
         }
 
         private void generateASM(ASMNode ast)
@@ -687,7 +759,7 @@ ret
                     emitLn("mov eax, dword [eax]" + convStr);
                     break;
                 default:
-                    new Error(Errors.UnsupportedOperation, lastType);
+                    emitLn("mov eax, dword [eax]" + convStr);   //its a pointer
                     break;
             }
             generatePush("eax");

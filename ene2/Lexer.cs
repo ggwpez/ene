@@ -15,6 +15,7 @@ namespace ene2
             for (i = s; i < toMatch.Length; i++)
                 if (!Char.IsDigit(toMatch[i]))
                     break;
+
             if (i < toMatch.Length && toMatch[i] == '.')
             {
                 isDouble |= true;
@@ -113,10 +114,12 @@ namespace ene2
                 { toks.Add(new TokOp(getOp(c))); l = 1; }
                 else if (c == ':')
                 { toks.Add(ddot(i, out l)); }
+                else if (c == '.')
+                { toks.Add(new TokDot());    l = 1; }
                 else if (c == '°')
                 { toks.Add(new TokCircle()); l = 1; }
                 else if (c == ';')
-                { toks.Add(new TokSemi()); l = 1; }
+                { toks.Add(new TokSemi());   l = 1; }
                 else if (c == '=')
                 { toks.Add(new TokAssign()); l = 1; }
                 else if (Char.IsWhiteSpace(c))
@@ -126,13 +129,13 @@ namespace ene2
                 else if (c == ')')
                 { toks.Add(new TokRBrk());  l = 1; }
                 else if (c == '[')
-                { toks.Add(new TokLEBrk());  l = 1; }
+                { toks.Add(new TokLEBrk()); l = 1; }
                 else if (c == ']')
-                { toks.Add(new TokREBrk());  l = 1; }
+                { toks.Add(new TokREBrk()); l = 1; }
 				else if (c == '{')
-				{ toks.Add(new TokLCBrk());  l = 1; }
+				{ toks.Add(new TokLCBrk()); l = 1; }
 				else if (c == '}')
-				{ toks.Add(new TokRCBrk());  l = 1; }
+				{ toks.Add(new TokRCBrk()); l = 1; }
                 else if (c == ',')
                 { toks.Add(new TokComma()); l = 1; }
                 else if (c == '"')

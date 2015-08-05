@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Security.Policy;
 
@@ -158,6 +159,7 @@ namespace ene2
     {
         public IdentNode name;
         public TypeNode type;
+        public Int32 baseOffset;    //like in structs
     }
 
 	public class FunctionNode : IType, AST
@@ -273,6 +275,11 @@ namespace ene2
     public class NamespaceIdentNode : AST
     {
         public List<String> v;
+        /// <summary>
+        /// Skips the last namespace entry.
+        /// </summary>
+        /// <value>The local.</value>
+        public List<String> local { get { return this.v.Take(this.v.Count -1).ToList(); } }
         public const string namespaceDelimiter = "@";
 
         public NamespaceIdentNode()
@@ -300,6 +307,20 @@ namespace ene2
             else
                 return String.Join(namespaceDelimiter, v);
         }
+    }
+
+    //smth like: point.y
+    public class MemberAccessNode : AST
+    {
+        public AST member;
+
+        public MemberAccessNode(AST Member)
+        {
+            member = Member;
+        }
+
+        public override string ToString()
+        { return '.' + member.ToString(); }
     }
 
 	public class IdentNode : AST
@@ -401,7 +422,12 @@ namespace ene2
 
     public class ReturnNode : AST
     {
-        AST 
+        public AST returnValue;
+
+        public ReturnNode(AST ReturnValue)
+        {
+            returnValue = ReturnValue;
+        }
 
         public override string ToString()
         { return "return"; }

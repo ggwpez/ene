@@ -171,7 +171,7 @@ namespace ene2
         private AST parseSingleIdentBlock(Int32 s, out Int32 l)             //in a block
         {
             assert(typeof(TokIdent), toMatch[s]);
-            parseIdent(s, out l);                                           //get length of the ident
+            AST tmp = parseIdent(s, out l);                                           //get length of the ident
 
             if (toMatch[s +l] is TokDDot || toMatch[s +l] is TokCircle)     //local var definition
                 return parseVariableDefinition(s, out l);
@@ -260,8 +260,7 @@ namespace ene2
 
         private AST parseSingleIdentStruct(Int32 s, out Int32 l)
         {
-            assert(typeof(TokIdent), toMatch[s]);
-            parseIdent(s, out l);
+            assert(typeof(TokIdent), toMatch[s]); l = 1;
 
             if (toMatch[s +l] is TokDDot || toMatch[s +l] is TokCircle)     //member variable definition
                 return parseVariableDefinition(s, out l);
@@ -288,6 +287,8 @@ namespace ene2
         private AST parseIdent(Int32 s, out Int32 l)    //with namespace-access
         {
             List<String> namespace_ = new List<String>();
+            List<IdentNode> member = new List<IdentNode>();
+            IdentNode parent = null;
             assert(typeof(TokIdent), toMatch[s]); l = 1;
 
             if (toMatch[s +1] is TokDDDot)  //it has a namespace
@@ -301,10 +302,12 @@ namespace ene2
 
                     l += 2;
                 }
-                return new IdentNode(((TokIdent)toMatch[s +l++]).v, new NamespaceIdentNode(namespace_));
+                parent = new IdentNode(((TokIdent)toMatch[s +l++]).v, new NamespaceIdentNode(namespace_));
             }
             else
-                return (IdentNode)(TokIdent)toMatch[s];   
+                parent = (IdentNode)(TokIdent)toMatch[s];  
+
+            return parent;
         }
 
         private AST parseExpressionTerm(Int32 s, out Int32 l)
@@ -329,6 +332,8 @@ namespace ene2
                     expressionAST = parseASM(s +l, out expressionL);
                 else if (toMatch[s +l] is TokString)
                     expressionAST = parseString(s +l, out expressionL);
+                else if (toMatch[s +l] is TokDot)
+                    expressionAST = parseMemberAccess(s +l, out expressionL);
                 else if (toMatch[s +l] is TokSemi)
                 { l += 1; break; }
                 else if (toMatch[s +l] is TokRBrk || toMatch[s +l] is TokComma)
@@ -341,7 +346,7 @@ namespace ene2
 
                 if (toMatch[s +l] is TokSemi) break;
                 //if (expressionAST is AssignNode && toMatch[s +l] is TokSemi) 
-                //    l--;
+                 //   l--;
                 if (toMatch[s +l] is TokSemi) break;
             }
 
@@ -375,6 +380,17 @@ namespace ene2
             l = 0; return null;
         }
 
+        private AST parseMemberAccess(Int32 s, out Int32 l)
+        {
+            assert(typeof(TokDot), toMatch[s]); l = 1;
+
+            Int32 memberL;
+            AST memberAST = parseExpressionTerm(s +l, out memberL);
+            l += memberL;
+
+            return new MemberAccessNode(memberAST);
+        }
+
         private AST parseFunctionDefinition(Int32 s, out Int32 l)   //int get_l(ptr str) { … };
         {
             AST typeAST = parseType(s, out l);
@@ -403,7 +419,7 @@ namespace ene2
 
             Int32 argListL;
             AST argList = parseList(s +l, out argListL);
-            l += argListL +1;
+            l += argListL;
 
             return new FunctionCallNode(target, (ListNode)argList);
         }
@@ -470,11 +486,14 @@ namespace ene2
         private AST parseType(Int32 s, out Int32 l)
         {
             assert(typeof(TokIdent), toMatch[s]);
-            l = 1;
-
+            IdentNode tName = (IdentNode)parseIdent(s, out l);
+             
             List<TypeNode> types = new List<TypeNode>();
-            types.Add(new TypeNode((IdentNode)(TokIdent)toMatch[s], 4, 4, null, null));
+            types.Add(new TypeNode(tName, 4, 4, null, null));
 
+            if (!(toMatch[s +l] is TokCircle))
+                l = 1;
+            else
             while (toMatch[s +l] is TokCircle)
             {
                 l++;
@@ -587,7 +606,7 @@ namespace ene2
             AST retValue = parseExpressionTerm(s +l, out retVL);
             l += retVL;
 
-            return new ReturnNode();
+            return new ReturnNode(retValue);
         }
 
         private Boolean assert(System.Type awaited, Token got)

@@ -33,7 +33,10 @@ namespace ene2
                     stb.Append("Type '" + v[0].ToString() + "' unknown.");
                     break;
                 case Errors.NamespaceUnknown:
-                    stb.Append("NamespaceUnknown '" + v[0].ToString() + "' unknown.");
+                    stb.Append("Namespace '" + v[0].ToString() + "' unknown.");
+                    break;
+                case Errors.MemberUnknown:
+                    stb.Append("Namespace '" + v[0].ToString() + "' in structure '" + v[1].ToString() + "' unknown.");
                     break;
                 case Errors.Internal:
                     stb.Append("Internal error");
@@ -100,6 +103,7 @@ namespace ene2
         LabelUnknown,
         TypeUnknown,
         NamespaceUnknown,
+        MemberUnknown,
         Internal,
         DereferencingGenericPtr,
         DereferencingNull,

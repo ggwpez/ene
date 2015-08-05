@@ -221,7 +221,7 @@ namespace ene2
             Tree tmp = this;
             Int32 i = 0;
 
-            while ((tmp = tmp[paths[i++]]) != null && i < paths.Count);
+            while (i < paths.Count && (tmp = tmp[paths[i++]]) != null);
             if (tmp != null)
                 return tmp;
 

@@ -18,6 +18,7 @@ namespace ene2
     public class TokREBrk   : Token { public override String ToString() { return "]"; } }
     public class TokLCBrk   : Token { public override String ToString() { return "{"; } }
     public class TokRCBrk   : Token { public override String ToString() { return "}"; } }
+    public class TokDot     : Token { public override String ToString() { return "."; } }
     public class TokDDot    : Token { public override String ToString() { return ":"; } }
     public class TokDDDot   : Token { public override String ToString() { return "::"; } }
     public class TokSemi    : Token { public override String ToString() { return ";"; } }
