@@ -560,7 +560,7 @@ namespace ene2
             assert(typeof(TokAssign), toMatch[s]);                         //  )
 
             Int32 valueL;
-            AST valueAST = parseExpressionTerm(s+1, out valueL);
+            AST valueAST = parseExpressionTerm(s+1, out valueL);            //returns '.x = 6' ...
             l = valueL +1;
 
             return new AssignNode((ExpressionTermNode)valueAST);

@@ -327,8 +327,8 @@ namespace ene2
 
         public void register(IType symbol, Boolean withUsage = false)
         {
-            if (symbol is VariableNode && ((VariableNode)symbol).type.name.v != "ptr")
-                symbol.type = (TypeNode)this.getObj(symbol.type.name);
+            //if (symbol is VariableNode && ((VariableNode)symbol).type.name.v != "ptr")
+             //   symbol.type = (TypeNode)this.getObj(symbol.type.name);
 
             registeredLabels.Add(symbol);
         }

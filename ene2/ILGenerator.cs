@@ -284,6 +284,7 @@ ret
                 new Error(Errors.LabelInUse, ast.name);
 
             ast.isLocal = true;                               //set to local
+            ast.type = (TypeNode)scope.getObj(ast.type.name);
             scope.register(ast);
 
             TypeNode pointedToType = fixType(ast.type);
@@ -413,19 +414,17 @@ ret
                 generateMemberCallStruct((FunctionCallNode)ast.member);
             else if (ast.member is ExpressionTermNode)
             {
-                ast.member = ((ExpressionTermNode)ast.member).expressions[0];
-                generateMemberAccess(ast);
+                ExpressionTermNode tmp = (ExpressionTermNode)ast.member;
+                foreach (AST node in tmp.expressions)
+                    generateMemberAccess(new MemberAccessNode(node));
             }
             else if (ast.member is MemberAccessNode)
             {
                 generateMemberAccess((MemberAccessNode)ast.member);
-                generateAdd();
+                //generateAdd();
             }
             else
-            {
-                //someone wrote like: point.3
-                new Error(Errors.MemberUnknown, ast.member, lastType.name);
-            }
+                generateExpression(ast.member);
         }
 
         private void generateMemberAccessStruct(IdentNode ast)  //pass the member name
@@ -433,12 +432,15 @@ ret
             for (int i = 0; i < lastType.member.Length; i++)
                 if (lastType.member[i].name.v == ast.v)
                 {
-                    generatePush(lastType.member[i].baseOffset.ToString());
-                    lastTypeI = lastType.member[i];
-                    return;
+                    //generatePush(lastType.member[i].baseOffset.ToString());
+                    lastTypeI = lastType.member[i].type;
                 }
-
-            new Error(Errors.MemberUnknown, ast, lastType.name);
+            if (lastTypeI.baseOffset != 0)
+            {
+                generatePush(lastTypeI.baseOffset.ToString());
+                generateAdd();
+            }
+            //new Error(Errors.MemberUnknown, ast, lastType.name);
         }
 
         private void generateMemberCallStruct(FunctionCallNode ast)  //pass the member name
@@ -468,6 +470,11 @@ ret
                 emitLn("push eax");                     //save the return value
 
             lastType = returnType;
+        }
+
+        private void generateAddressFunctionCall()  //'5()' or '132(x, 4)'
+        {
+
         }
 
         private void generateAssign(AssignNode ast)

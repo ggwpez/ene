@@ -2,12 +2,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="ene2/ILGenerator.cs">
     <Files>
-      <File FileName="ene2/AST.cs" Line="282" Column="41" />
-      <File FileName="ene2/ILGenerator.cs" Line="294" Column="46" />
-      <File FileName="ene2/Parser.cs" Line="483" Column="3" />
-      <File FileName="ene2/Test/code.ene" Line="21" Column="12" />
-      <File FileName="ene2/Error.cs" Line="65" Column="33" />
-      <File FileName="ene2/Scope.cs" Line="35" Column="42" />
+      <File FileName="ene2/ILGenerator.cs" Line="790" Column="26" />
+      <File FileName="ene2/Parser.cs" Line="1" Column="1" />
+      <File FileName="ene2/Test/code.ene" Line="1" Column="1" />
+      <File FileName="ene2/AST.cs" Line="1" Column="1" />
+      <File FileName="ene2/Error.cs" Line="1" Column="1" />
+      <File FileName="ene2/Scope.cs" Line="277" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -23,7 +23,9 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/home/vados/Code/Projects/ene2/ene2/Error.cs" line="80" column="73" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
