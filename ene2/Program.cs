@@ -7,6 +7,8 @@ namespace ene2
 {
 	class MainClass
 	{
+        static String fileName = "Test/code.ene";
+
 		public static void Main (string[] args)
         {
             Lexer lexer = new Lexer();
@@ -14,7 +16,7 @@ namespace ene2
             ILGenerator il = new ILGenerator();
 
             List<Token> toks = new List<Token>();
-            toks.AddRange(lexer.tokenize(File.ReadAllText("Test/code.ene")));
+            toks.AddRange(lexer.tokenize(File.ReadAllText(fileName)));
             toks.Add(new TokEOS());
 
             AST ast = parser.parse(toks.ToArray());
@@ -56,12 +58,11 @@ namespace ene2
             Process builded = Process.Start("program");
             builded.WaitForExit();
             if (builded.ExitCode != 0)
-            {
-                Console.Write("'\nProgram aborted");
-                return;
-            }
+                Console.Write("'\nProgram aborted.");
+            else
+                Console.Write("'\nExecution successful.");
 
-            Console.WriteLine("'\nExecution successful");
+            Console.WriteLine(" return = {0}", builded.ExitCode);
         }
 	}
 }

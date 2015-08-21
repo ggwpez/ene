@@ -338,8 +338,10 @@ namespace ene2
                 { l += 1; break; }
                 else if (toMatch[s +l] is TokRBrk || toMatch[s +l] is TokComma)
                     break;
-                else
+                else if (l == 0)
                     new Error(Errors.NotAwaitedToken, toMatch[s +l]);
+                else
+                    break;
 
                 l += expressionL;
                 term.Add(expressionAST);

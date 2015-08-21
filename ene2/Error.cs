@@ -66,7 +66,7 @@ namespace ene2
         { new Warning(Warnings.Unknown, v); }
         public Warning(Warnings num, params Object[] v)
         {
-            StringBuilder stb = new StringBuilder("Warning: ");
+            /*StringBuilder stb = new StringBuilder("Warning: ");
 
             switch (num) 
             {
@@ -90,7 +90,7 @@ namespace ene2
                     break;
             }
 
-            Console.WriteLine(stb.ToString());
+            Console.WriteLine(stb.ToString());*/
         }
     }
 

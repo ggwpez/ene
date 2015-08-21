@@ -187,7 +187,6 @@ ret
             ast.name.namespace_.v.Add(ast.name.v);
             //
             scope.enterOrCreateNamespace(ast.name.namespace_);
-
             foreach (AST statement in ast.member)
                 generateStructStatement((AST)statement);
 
@@ -405,7 +404,7 @@ ret
             emitLn("ret " + (argSize).ToString());
         }
 
-        //returns the address of the member on the stack, and the type in this.lastType
+        //returns the address of the member on the stack, and the type in lastType
         private void generateMemberAccess(MemberAccessNode ast)
         {
             if (ast.member is IdentNode)
@@ -415,8 +414,9 @@ ret
             else if (ast.member is ExpressionTermNode)
             {
                 ExpressionTermNode tmp = (ExpressionTermNode)ast.member;
-                foreach (AST node in tmp.expressions)
-                    generateMemberAccess(new MemberAccessNode(node));
+                generateMemberAccess(new MemberAccessNode(tmp.expressions[0])); //TODO: look here again, was just some filty hotfix
+                foreach (AST node in tmp.expressions.Skip(1))
+                    generateExpression(node);
             }
             else if (ast.member is MemberAccessNode)
             {
@@ -429,6 +429,7 @@ ret
 
         private void generateMemberAccessStruct(IdentNode ast)  //pass the member name
         {
+            lastTypeI = scope.getObj(lastType.name);
             for (int i = 0; i < lastType.member.Length; i++)
                 if (lastType.member[i].name.v == ast.v)
                 {
@@ -489,9 +490,9 @@ ret
                     lastType = (TypeNode)lastType.pointsTo;
             }
 
-            generatePop("edi");
+            //generatePop("edi");
             generateExpressionTerm(ast.value);          //read the value, the var should be assigned to
-            generatePush("edi");
+            //generatePush("edi");
 
             generateVariableWrite();                    //write it at the var's address
         }
@@ -530,6 +531,9 @@ ret
                 case Operator.Pop:
                     generatePopEBP();
                     break;
+                case Operator.Cpy:
+                    generateCopy();
+                    break;
                 default:
                     break;
             }
@@ -542,7 +546,8 @@ ret
             if (!scope.isRegistered(ast))
                 new Error(Errors.LabelUnknown, ast);
 
-            IType variableBase = scope.getObj(ast); 
+            IType variableBase = scope.getObj(ast);
+
             if (variableBase is VariableNode)               //its a variable
             {
                 lastType = variableBase.type;
@@ -712,8 +717,8 @@ ret
 
         private void generateVariableWrite()
         {
-            generatePop("ecx");
             generatePop("eax");
+            generatePop("ecx");
 
             if (lastType == null)
                 new Error(Errors.DereferencingNull, "°");
@@ -798,6 +803,13 @@ ret
                 emitLn("pop " + v);
 
             scope.pop(4);
+        }
+
+        private void generateCopy()
+        {
+            generatePop("eax\t;copy operator");
+            generatePush("eax\t;\"");
+            generatePush("eax\t;\"");
         }
 #endregion
 

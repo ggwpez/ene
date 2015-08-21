@@ -1,51 +1,35 @@
-namespace data
-{
-    c32°: l;
-}
-
-struct point
-{
-    c32°: x;
-    c32°: y;
-    
-    c32 length(c32° v)
-    {
-       return v~1+; 
-    }
-}
+c32°: l;
 
 asm("global main");
 asm("extern printf");
 void main()
 {
-    point: p;
-    p.x = 64;
+    l    c8° = 64;
+    l 1+ c8° = 65;
+    l 2+ c8° = 66;
+    l 3+ c8° = 0;
     
-    data::l    c8° = p.x~;
-    data::l 1+ c8° = p.length(64);
-    data::l 2+ c8° = p.length(65);
-    data::l 3+ c8° = 0;
-    
-    io::o::print(data::l, 3);
+    io::o::print(l, 3);
+    return 0;
 };
 
 namespace io
 {
     namespace o
     {
-        void print(c8° string, c8 count)
+        void print(c8°° string, c8 count)
         {   
             while (count~)
             {
-                io::print_str(string);
+                io::print_str(string~);
                 math::dec(count);
             }
         };
     }
     
-    void print_str(c8°° string)
+    void print_str(c8° string)
     {
-        string~~ asm("call printf") ^;
+        string~ asm("call printf") ^;
     };
 }
 
@@ -53,11 +37,11 @@ namespace math
 {
     void inc(c32°° v_ptr)
     {
-        v_ptr~~ v_ptr~ = asm("inc dword [esp]");
+        v_ptr~ = $~ 1+;
     };
 
     void dec(c32°° v_ptr)
     {
-        v_ptr~~ v_ptr~ = asm("dec dword [esp]");
+        v_ptr~ = $~ 1-;
     };
 }

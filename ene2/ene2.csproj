@@ -75,5 +75,10 @@
       <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test\assign.ene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+    </None>
+    <None Include="Test\struct.ene" />
   </ItemGroup>
 </Project>

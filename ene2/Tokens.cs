@@ -44,6 +44,7 @@ namespace ene2
         Sml = 7,    // <
         Grt = 8,    // >
         Neq = 9,    // !
-        Pop = 10    // ^
+        Pop = 10,   // ^
+        Cpy = 11    // $
     }
 }

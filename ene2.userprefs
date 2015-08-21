@@ -1,31 +1,22 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ene2/ILGenerator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ene2/Test/code.ene">
     <Files>
-      <File FileName="ene2/ILGenerator.cs" Line="790" Column="26" />
-      <File FileName="ene2/Parser.cs" Line="1" Column="1" />
-      <File FileName="ene2/Test/code.ene" Line="1" Column="1" />
-      <File FileName="ene2/AST.cs" Line="1" Column="1" />
-      <File FileName="ene2/Error.cs" Line="1" Column="1" />
-      <File FileName="ene2/Scope.cs" Line="277" Column="10" />
+      <File FileName="ene2/ILGenerator.cs" Line="421" Column="53" />
+      <File FileName="ene2/Test/code.ene" Line="35" Column="1" />
+      <File FileName="ene2/Lexer.cs" Line="1" Column="1" />
+      <File FileName="ene2/Tokens.cs" Line="1" Column="1" />
+      <File FileName="ene2/Scope.cs" Line="1" Column="1" />
+      <File FileName="ene2/Test/assign.ene" Line="11" Column="17" />
+      <File FileName="ene2/Program.cs" Line="10" Column="44" />
+      <File FileName="ene2/Error.cs" Line="51" Column="32" />
+      <File FileName="ene2/Parser.cs" Line="342" Column="1" />
+      <File FileName="ene2/AST.cs" Line="320" Column="1" />
+      <File FileName="ene2/Test/struct.ene" Line="21" Column="31" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="ene2" expanded="True">
-            <Node name="References" expanded="True" />
-            <Node name="Properties" expanded="True" />
-            <Node name="Test" expanded="True" />
-            <Node name="ILGenerator.cs" selected="True" />
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/home/vados/Code/Projects/ene2/ene2/Error.cs" line="80" column="73" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

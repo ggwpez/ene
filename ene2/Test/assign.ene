@@ -1,0 +1,28 @@
+asm("global main");
+int main()
+{
+    c32: a;
+    c32: b;
+    
+    = = a 8 b 7;
+    = a = 8 b 7;
+    = a 8 = b 7;
+    = a 8 b = 7;
+    = a 8 b 7 =;
+    
+    a = = 8 b 7;
+    a = 8 = b 7;
+    a = 8 b = 7;
+    a = 8 b 7 =;
+    
+    a 8 = = b 7;
+    a 8 = b = 7;
+    a 8 = b 7 =;
+    
+    a 8 b = = 7;
+    a 8 b = 7 =;
+    
+    a 8 b 7 = =;
+    
+    return 0;
+}

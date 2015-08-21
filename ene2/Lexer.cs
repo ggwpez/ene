@@ -160,7 +160,7 @@ namespace ene2
             return new String(arr);
         }
 
-        public Char[] operators = "+-*/~?<>!^".ToCharArray();
+        public Char[] operators = "+-*/~?<>!^$".ToCharArray();
         private Operator getOp(Char c)
         {
             for (int i = 0; i < operators.Length; i++)
